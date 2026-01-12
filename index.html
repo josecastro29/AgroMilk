@@ -10,6 +10,9 @@
     <header>
         <h1>🐄 AgroMilk</h1>
         <p>Gestão de Ordenhas</p>
+        <div id="sync-status" class="sync-status">
+            <span id="sync-indicator">🔄 A conectar...</span>
+        </div>
         <div id="media-geral-container" class="media-geral-header"></div>
     </header>
 
@@ -133,6 +136,14 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <!-- Configuração do Firebase -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Aplicação -->
     <script src="app.js"></script>
 </body>
 </html>

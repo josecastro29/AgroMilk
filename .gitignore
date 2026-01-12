@@ -1,0 +1,10 @@
+# Ficheiros do sistema
+.DS_Store
+Thumbs.db
+
+# Ficheiros do OneDrive
+~$*
+
+# Backups
+*.bak
+*~

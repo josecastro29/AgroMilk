@@ -31,6 +31,21 @@ header p {
     font-size: 1.1em;
 }
 
+.sync-status {
+    margin-top: 10px;
+}
+
+#sync-indicator {
+    display: inline-block;
+    background: rgba(255,255,255,0.9);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+}
+
 .media-geral-header {
     margin-top: 15px;
 }

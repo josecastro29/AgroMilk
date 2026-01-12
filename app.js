@@ -26,21 +26,86 @@ class AgroMilk {
 
     // ========== GESTÃO DE DADOS ==========
     carregarDados() {
-        const vacasSalvas = localStorage.getItem('agromilk_vacas');
-        const ordenhasSalvas = localStorage.getItem('agromilk_ordenhas');
-        
-        if (vacasSalvas) {
-            this.vacas = JSON.parse(vacasSalvas);
-        }
-        
-        if (ordenhasSalvas) {
-            this.ordenhas = JSON.parse(ordenhasSalvas);
+        // Se Firebase estiver disponível, carregar do Firebase
+        if (typeof firebase !== 'undefined' && firebase.database) {
+            this.carregarDoFirebase();
+        } else {
+            // Fallback para localStorage se Firebase não estiver disponível
+            const vacasSalvas = localStorage.getItem('agromilk_vacas');
+            const ordenhasSalvas = localStorage.getItem('agromilk_ordenhas');
+            
+            if (vacasSalvas) {
+                this.vacas = JSON.parse(vacasSalvas);
+            }
+            
+            if (ordenhasSalvas) {
+                this.ordenhas = JSON.parse(ordenhasSalvas);
+            }
         }
     }
 
+    carregarDoFirebase() {
+        const syncIndicator = document.getElementById('sync-indicator');
+        
+        // Monitorar status de conexão
+        database.ref('.info/connected').on('value', (snapshot) => {
+            if (snapshot.val() === true) {
+                if (syncIndicator) {
+                    syncIndicator.innerHTML = '✅ Sincronizado';
+                    syncIndicator.style.color = '#28a745';
+                }
+            } else {
+                if (syncIndicator) {
+                    syncIndicator.innerHTML = '⚠️ Offline';
+                    syncIndicator.style.color = '#ffc107';
+                }
+            }
+        });
+
+        // Carregar vacas
+        database.ref('vacas').on('value', (snapshot) => {
+            const dados = snapshot.val();
+            if (dados) {
+                this.vacas = Object.values(dados);
+                this.atualizarInterface();
+            }
+        });
+
+        // Carregar ordenhas
+        database.ref('ordenhas').on('value', (snapshot) => {
+            const dados = snapshot.val();
+            if (dados) {
+                this.ordenhas = Object.values(dados);
+                this.atualizarInterface();
+            }
+        });
+    }
+
     salvarDados() {
+        // Salvar no Firebase se disponível
+        if (typeof firebase !== 'undefined' && firebase.database) {
+            this.salvarNoFirebase();
+        }
+        
+        // Sempre salvar no localStorage como backup
         localStorage.setItem('agromilk_vacas', JSON.stringify(this.vacas));
         localStorage.setItem('agromilk_ordenhas', JSON.stringify(this.ordenhas));
+    }
+
+    salvarNoFirebase() {
+        // Salvar vacas
+        const vacasObj = {};
+        this.vacas.forEach(vaca => {
+            vacasObj[`vaca_${vaca.numero}`] = vaca;
+        });
+        database.ref('vacas').set(vacasObj);
+
+        // Salvar ordenhas
+        const ordenhasObj = {};
+        this.ordenhas.forEach(ordenha => {
+            ordenhasObj[`ordenha_${ordenha.id}`] = ordenha;
+        });
+        database.ref('ordenhas').set(ordenhasObj);
     }
 
     // ========== GESTÃO DE VACAS ==========
